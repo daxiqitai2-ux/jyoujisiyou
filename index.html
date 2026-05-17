@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>常時飼養台帳 2026年度</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root{
+  --bg:#f4f2ed;--sur:#fff;--sur2:#eeebe3;--sur3:#e8e4db;
+  --bd:#d8d4ca;--bd2:#c4bfb4;
+  --tx:#1c1a16;--tx2:#6a6558;--tx3:#9a958a;
+  --gr:#2b5c3a;--gr2:#3d7a50;--gr-bg:#e6f2ea;
+  --xl:#d0ecda;--xl-bd:#8ecda4;
+  --lk:#fff4c2;--lk-bd:#e8c840;
+  --rd:#b83232;--or:#c06820;
+  --r:5px;--sh:0 1px 4px rgba(0,0,0,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--tx);font-size:13px}
+/* ── HEADER ── */
+header{background:var(--gr);color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+header h1{font-size:15px;font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+.hr{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+select{padding:5px 8px;border:1px solid rgba(255,255,255,.3);border-radius:var(--r);background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-family:inherit;cursor:pointer;outline:none}
+select option{background:#2b5c3a}
+.btn{padding:5px 11px;border-radius:var(--r);border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.17);color:#fff;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s;font-weight:500}
+.btn:hover{background:rgba(255,255,255,.3)}
+#msg{font-size:11px;color:rgba(255,255,255,.8);min-width:68px}
+/* ── LAYOUT ── */
+.wrap{max-width:1560px;margin:0 auto;padding:14px 14px 30px}
+/* ── MONTH TABS (fiscal year) ── */
+.mo-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
+.mo-tab{padding:5px 11px;border-radius:var(--r);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;transition:.15s}
+.mo-tab:hover{border-color:var(--gr2);color:var(--gr)}
+.mo-tab.active{background:var(--gr);border-color:var(--gr);color:#fff;font-weight:700}
+.mo-tab.has-data{background:var(--gr-bg);border-color:var(--gr2);color:var(--gr)}
+.mo-tab.has-data.active{background:var(--gr);color:#fff}
+/* ── BARN TABS ── */
+.bn-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
+.bn-tab{padding:6px 14px;border-radius:var(--r);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;transition:.15s}
+.bn-tab:hover{border-color:var(--gr2);color:var(--gr)}
+.bn-tab.active{background:var(--gr);border-color:var(--gr);color:#fff;font-weight:700}
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.sc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:9px 12px;box-shadow:var(--sh)}
+.sc .lb{font-size:10px;color:var(--tx3);margin-bottom:2px;letter-spacing:.03em}
+.sc .vl{font-size:19px;font-weight:700;line-height:1.2}
+.sc .sb{font-size:10px;color:var(--tx3);margin-top:2px}
+.sc .sb a{color:var(--gr2);cursor:pointer;text-decoration:underline}
+/* ── ACCIDENT PANEL ── */
+.acc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:12px;box-shadow:var(--sh)}
+.acc h3{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;letter-spacing:.04em}
+.acc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+.ai{background:var(--sur2);border-radius:4px;padding:7px 9px}
+.ai.hl{border:1px solid var(--gr2);background:var(--gr-bg)}
+.ai .an{font-size:10px;color:var(--tx3);margin-bottom:2px}
+.ai .av{font-size:14px;font-weight:700}
+.ai .ad{font-size:10px;color:var(--tx3)}
+/* ── NOTICES ── */
+.notices{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.notice{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);padding:4px 8px;border-radius:var(--r)}
+.notice.xl{background:var(--xl);border:1px solid var(--xl-bd)}
+.notice.lk{background:var(--lk);border:1px solid var(--lk-bd)}
+.ndot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* ── TABLE ── */
+.tw{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{background:var(--sur2);padding:5px 4px;text-align:center;font-weight:700;font-size:10px;border-bottom:1px solid var(--bd2);white-space:nowrap;position:sticky;top:0;z-index:2;letter-spacing:.01em}
+thead th.grp{background:var(--sur3);font-size:10px;border-bottom:1px solid var(--bd);color:var(--tx2)}
+thead th.ttl{background:var(--gr-bg);color:var(--gr)}
+tbody td{padding:2px 3px;text-align:center;border-bottom:1px solid var(--bd)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f6f4ef}
+.td-d{font-size:10px;font-weight:700;color:var(--tx3);background:var(--sur2);min-width:20px;padding:2px 4px}
+.td-t{font-weight:700;color:var(--gr);background:var(--gr-bg);min-width:40px;border-left:1px solid var(--bd2)}
+tfoot td{background:var(--sur2);font-weight:700;font-size:10px;border-top:1px solid var(--bd2);padding:5px 3px;text-align:center}
+tfoot .td-t{background:var(--gr-bg);color:var(--gr)}
+tr.sat .td-d{color:var(--gr2)}
+tr.sun .td-d{color:var(--rd)}
+input[type=number]{width:44px;border:1px solid transparent;border-radius:3px;padding:2px 2px;text-align:center;background:transparent;color:var(--tx);font-size:11px;font-family:inherit;transition:.1s}
+input[type=number]:hover{border-color:var(--bd2);background:var(--sur2)}
+input[type=number]:focus{outline:none;border-color:var(--gr2);background:#fff}
+input[type=number].xl{background:var(--xl)}
+input[type=number].xl:focus{background:#fff}
+input[type=number].lk{background:var(--lk);cursor:not-allowed;opacity:.75}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
+/* ── MOVE MAP ── */
+.movemap{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:10px 13px;margin-bottom:12px;box-shadow:var(--sh)}
+.movemap h3{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:7px}
+.mvrow{display:flex;flex-wrap:wrap;gap:5px;font-size:11px;color:var(--tx2)}
+.mvitem{display:flex;align-items:center;gap:4px;padding:3px 8px;background:var(--lk);border:1px solid var(--lk-bd);border-radius:3px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🐷 常時飼養台帳 <span style="font-weight:400;font-size:12px;opacity:.8">2026年度（4月〜翌3月）</span></h1>
+  <div class="hr">
+    <button class="btn" onclick="saveData()">💾 保存</button>
+    <button class="btn" onclick="exportExcel()">📊 Excel出力</button>
+    <span id="msg"></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Month tabs: Apr 2026 – Mar 2027 -->
+  <div class="mo-tabs" id="moTabs"></div>
+  <div class="bn-tabs" id="bnTabs"></div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ============================================================
+// FISCAL YEAR: 2026/04 → 2027/03
+// ============================================================
+const FISCAL = [
+  {y:2026,m:4},{y:2026,m:5},{y:2026,m:6},{y:2026,m:7},
+  {y:2026,m:8},{y:2026,m:9},{y:2026,m:10},{y:2026,m:11},
+  {y:2026,m:12},{y:2027,m:1},{y:2027,m:2},{y:2027,m:3}
+];
+const MON_JP=['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+// ============================================================
+// BARN & MOVEMENT DEFINITIONS
+// linksTo  : when THIS cell changes, write to dest barn/key
+// linkedFrom: THIS cell is read-only, driven by src barn/key
+// multiLink : one "dec" maps to multiple destinations based on sub-key
+// ============================================================
+const BARNS = [
+  {id:'bunben', name:'分娩舎', cols:[
+    {key:'inc',  label:'増'},
+    {key:'dec',  label:'減', linksTo:{barn:'rinyu', key:'inc'}},
+    {key:'die',  label:'死亡'},
+    {key:'total',label:'合計', calc:true}
+  ]},
+  {id:'rinyu', name:'離乳舎', cols:[
+    {key:'inc',   label:'増',      linkedFrom:{barn:'bunben', key:'dec'}},
+    {key:'dec3',  label:'減(3号)', linksTo:{barn:'barn3',  key:'inc'}},
+    {key:'deciku',label:'減(育成)',linksTo:{barn:'ikusei', key:'inc'}},
+    {key:'die',   label:'死亡'},
+    {key:'total', label:'合計', calc:true}
+  ]},
+  {id:'ikusei', name:'育成舎', cols:[
+    {key:'inc',      label:'増',      linkedFrom:{barn:'rinyu', key:'deciku'}},
+    {key:'dec',      label:'減',      linksTo:{barn:'barn2', key:'inc'}},   // 育成→2号
+    {key:'ship_meat',label:'出荷(肉)'},
+    {key:'die',      label:'死亡'},
+    {key:'total',    label:'合計', calc:true}
+  ]},
+  {id:'barn3', name:'3号舎', cols:[
+    {key:'inc',      label:'増',      linkedFrom:{barn:'rinyu', key:'dec3'}},
+    {key:'dec',      label:'減',      linksTo:{barn:'barn1', key:'inc'}},   // 3号→1号
+    {key:'ship_meat',label:'出荷(肉)'},
+    {key:'die',      label:'死亡'},
+    {key:'total',    label:'合計', calc:true}
+  ]},
+  {id:'barn2', name:'2号舎', cols:[
+    {key:'inc',      label:'増',      linkedFrom:{barn:'ikusei', key:'dec'}},
+    {key:'dec1',     label:'減(1号)', linksTo:{barn:'barn1',  key:'inc2'}},  // 2号→1号(inc2)
+    {key:'dec_cand', label:'減(候補)'},
+    {key:'ship_seed',label:'出荷(種)'},
+    {key:'ship_meat',label:'出荷(肉)'},
+    {key:'die',      label:'死亡'},
+    {key:'total',    label:'合計', calc:true}
+  ]},
+  {id:'barn1', name:'1号舎', cols:[
+    // 1号舎の「増」は 3号舎「減」と 2号舎「減(1号)」の合計
+    {key:'inc',      label:'増(3号)', linkedFrom:{barn:'barn3', key:'dec'}},
+    {key:'inc2',     label:'増(2号)', linkedFrom:{barn:'barn2', key:'dec1'}},
+    {key:'ship_seed',label:'出荷(種)'},
+    {key:'ship_meat',label:'出荷(肉)'},
+    {key:'dec_cand', label:'減(候補)'},
+    {key:'die',      label:'死亡'},
+    {key:'total',    label:'合計', calc:true}
+  ]}
+];
+
+// ============================================================
+// EXCEL pre-load (Apr & May 2026)
+// ============================================================
+const XL = {"2026_4_bunben":{"initCount":350,"days":{"1":{"die":2},"2":{"inc":12,"dec":60,"die":1},"3":{"inc":43},"4":{"die":2},"5":{"die":1},"6":{},"7":{"die":1},"8":{},"9":{"inc":26,"dec":62,"die":1},"10":{"inc":13},"11":{},"12":{"inc":10,"die":1},"13":{"die":2},"14":{},"15":{"inc":21,"dec":52,"die":3},"16":{"inc":30,"die":4},"17":{"inc":30,"die":1},"18":{"inc":9,"die":1},"19":{},"20":{"die":1},"21":{"inc":9,"die":1},"22":{"inc":9,"die":2},"23":{"inc":24,"dec":52,"die":2},"24":{"inc":40,"die":1},"25":{"inc":9},"26":{"die":1},"27":{"die":2},"28":{"die":1},"29":{"die":1},"30":{"inc":25,"dec":64,"die":2},"31":{}}},"2026_4_rinyu":{"initCount":290,"days":{"1":{},"2":{"inc":60},"3":{},"4":{"dec3":27},"5":{"deciku":30},"6":{},"7":{},"8":{},"9":{"inc":62},"10":{},"11":{"dec3":34,"deciku":30},"12":{"die":1},"13":{},"14":{},"15":{"inc":52},"16":{},"17":{},"18":{"dec3":20,"die":1},"19":{"deciku":49},"20":{"die":1},"21":{},"22":{"die":1},"23":{"inc":52},"24":{"dec3":16},"25":{},"26":{"deciku":48},"27":{},"28":{},"29":{},"30":{"inc":64,"dec3":28},"31":{}}},"2026_4_ikusei":{"initCount":183,"days":{"1":{},"2":{},"3":{"dec":29},"4":{},"5":{"inc":30},"6":{},"7":{},"8":{},"9":{"dec":32},"10":{},"11":{"inc":30},"12":{},"13":{},"14":{"die":1},"15":{},"16":{},"17":{"dec":43},"18":{},"19":{"inc":49},"20":{},"21":{"die":1},"22":{},"23":{},"24":{"dec":44,"ship_meat":7},"25":{},"26":{"inc":48},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_4_barn3":{"initCount":291,"days":{"1":{"dec":31},"2":{},"3":{},"4":{"inc":27},"5":{},"6":{},"7":{},"8":{},"9":{"dec":24},"10":{},"11":{"inc":34},"12":{},"13":{},"14":{"die":1},"15":{},"16":{"dec":14},"17":{},"18":{"inc":20},"19":{},"20":{"ship_meat":1},"21":{"dec":15,"ship_meat":1},"22":{},"23":{},"24":{"inc":16,"ship_meat":13},"25":{},"26":{},"27":{},"28":{"dec":18},"29":{},"30":{"inc":28},"31":{}}},"2026_4_barn2":{"initCount":303,"days":{"1":{"ship_meat":4},"2":{"dec1":7},"3":{"inc":29},"4":{},"5":{},"6":{},"7":{"ship_meat":4},"8":{"dec1":23},"9":{"inc":32},"10":{},"11":{},"12":{},"13":{},"14":{"ship_meat":7},"15":{"dec1":34},"16":{"die":1},"17":{"inc":43,"die":1},"18":{},"19":{},"20":{"ship_meat":4},"21":{"ship_meat":8},"22":{"die":1},"23":{"dec1":31},"24":{"inc":44},"25":{"dec_cand":4},"26":{},"27":{"die":1},"28":{},"29":{"ship_meat":6},"30":{"die":1},"31":{}}},"2026_4_barn1":{"initCount":235,"days":{"1":{"inc":31,"ship_seed":3,"ship_meat":15},"2":{"inc":7},"3":{},"4":{},"5":{},"6":{"ship_meat":27},"7":{"ship_meat":24},"8":{"inc":23},"9":{"inc":24},"10":{},"11":{},"12":{"die":1},"13":{"ship_meat":30,"die":1},"14":{"ship_meat":21},"15":{"inc":34},"16":{"inc":14},"17":{"ship_seed":9},"18":{},"19":{},"20":{"ship_meat":16,"die":1},"21":{"inc":15,"ship_meat":12},"22":{"die":1},"23":{"inc":31},"24":{},"25":{"dec_cand":1,"die":1},"26":{},"27":{"ship_meat":29},"28":{"inc":18},"29":{"ship_meat":21},"30":{},"31":{}}},"2026_5_bunben":{"initCount":257,"days":{"1":{"die":1},"2":{"die":6},"3":{"die":3},"4":{"inc":6},"5":{},"6":{"die":3},"7":{"dec":70,"die":2},"8":{},"9":{},"10":{},"11":{},"12":{},"13":{},"14":{},"15":{},"16":{},"17":{},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_5_rinyu":{"initCount":258,"days":{"1":{},"2":{},"3":{},"4":{},"5":{},"6":{"deciku":31},"7":{"inc":70},"8":{},"9":{"dec3":16},"10":{},"11":{},"12":{},"13":{},"14":{},"15":{},"16":{"deciku":31},"17":{"dec3":28},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_5_ikusei":{"initCount":184,"days":{"1":{},"2":{},"3":{},"4":{"die":1},"5":{},"6":{"inc":31},"7":{},"8":{"dec":30},"9":{},"10":{},"11":{},"12":{},"13":{},"14":{},"15":{"dec":30},"16":{"inc":31},"17":{},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_5_barn3":{"initCount":292,"days":{"1":{},"2":{},"3":{"die":1},"4":{},"5":{},"6":{"dec":14},"7":{},"8":{},"9":{"inc":16},"10":{},"11":{},"12":{},"13":{"dec":35},"14":{},"15":{},"16":{},"17":{"inc":28},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_5_barn2":{"initCount":280,"days":{"1":{},"2":{},"3":{"dec1":23},"4":{"die":1},"5":{},"6":{"ship_meat":7},"7":{"dec1":23},"8":{"inc":30},"9":{},"10":{"die":1},"11":{},"12":{"ship_meat":13},"13":{},"14":{"dec1":18},"15":{"inc":30,"ship_seed":7,"die":1},"16":{},"17":{},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}},"2026_5_barn1":{"initCount":229,"days":{"1":{},"2":{},"3":{"inc":23,"die":1},"4":{"die":1},"5":{"ship_seed":3,"ship_meat":26,"die":1},"6":{"inc":14,"ship_meat":19,"die":1},"7":{"inc":23},"8":{},"9":{"die":2},"10":{},"11":{"ship_meat":23},"12":{"ship_meat":12},"13":{"inc":35},"14":{"inc":18},"15":{"ship_seed":14},"16":{},"17":{},"18":{},"19":{},"20":{},"21":{},"22":{},"23":{},"24":{},"25":{},"26":{},"27":{},"28":{},"29":{},"30":{},"31":{}}}};
+
+// ============================================================
+// STATE
+// ============================================================
+let DB = {};
+let curFi = 0;  // index into FISCAL
+let curBarn = 'bunben';
+
+// ============================================================
+// CORE DATA
+// ============================================================
+function key(fi, bid){ const {y,m}=FISCAL[fi]; return `${y}_${m}_${bid}`; }
+function days(fi){ const {y,m}=FISCAL[fi]; return new Date(y,m,0).getDate(); }
+function dow1(fi){ const {y,m}=FISCAL[fi]; return new Date(y,m-1,1).getDay(); }
+
+function data(fi, bid){
+  const k=key(fi,bid);
+  if(!DB[k]) DB[k]=XL[k]?JSON.parse(JSON.stringify(XL[k])):{initCount:0,days:{}};
+  const d=days(fi);
+  for(let i=1;i<=d;i++) if(!DB[k].days[i]&&!DB[k].days[String(i)]) DB[k].days[i]={};
+  return DB[k];
+}
+
+function dd(fi, bid, d){ const r=data(fi,bid); return r.days[d]||r.days[String(d)]||{}; }
+function gv(fi, bid, d, key){ return parseInt(dd(fi,bid,d)[key])||0; }
+
+function prevEnd(fi, bid){
+  if(fi===0) return null;
+  const pfi=fi-1;
+  // 前月データが全くない場合はnull
+  const pkey=key(pfi,bid);
+  if(!DB[pkey]&&!XL[pkey]) return null;
+  // 前月のrunTotalsを呼んで最終日の合計を返す
+  const {arr}=runTotals(pfi,bid);
+  return arr[arr.length-1]??null;
+}
+
+function runTotals(fi, bid){
+  const rec=data(fi,bid);
+  const barn=BARNS.find(b=>b.id===bid);
+  const nd=days(fi);
+  // 前月末を常に優先。前月データがない（年度最初の月）のみinitCountを使う
+  const pe=prevEnd(fi,bid);
+  const start=(pe!==null)?pe:(rec.initCount||0);
+  let t=start;
+  const arr=[];
+  for(let d=1;d<=nd;d++){
+    const row=dd(fi,bid,d);
+    for(const c of barn.cols){
+      if(c.calc) continue;
+      const v=parseInt(row[c.key])||0;
+      c.key==='inc'||c.key==='inc2'?t+=v:t-=v;
+    }
+    arr.push(t);
+  }
+  return {arr, start};
+}
+
+// ============================================================
+// PROPAGATE LINKS
+// ============================================================
+function propagate(fi, bid, colKey, val){
+  const barn=BARNS.find(b=>b.id===bid);
+  const col=barn.cols.find(c=>c.key===colKey);
+  if(!col||!col.linksTo) return;
+  const dest=data(fi,col.linksTo.barn);
+  // val is already written to source; mirror to dest
+  // We re-read directly from source to keep in sync
+}
+
+// Write a value and propagate
+function writeCell(fi, bid, d, colKey, rawVal){
+  const rec=data(fi,bid);
+  if(!rec.days[d]) rec.days[d]={};
+  const v=parseInt(rawVal)||0;
+  if(v===0) delete rec.days[d][colKey];
+  else rec.days[d][colKey]=v;
+
+  // Propagate to linked barn
+  const barn=BARNS.find(b=>b.id===bid);
+  const col=barn.cols.find(c=>c.key===colKey);
+  if(col&&col.linksTo){
+    const destRec=data(fi,col.linksTo.barn);
+    if(!destRec.days[d]) destRec.days[d]={};
+    if(v===0) delete destRec.days[d][col.linksTo.key];
+    else destRec.days[d][col.linksTo.key]=v;
+  }
+}
+
+// ============================================================
+// ACCIDENT RATES
+// ============================================================
+function accRates(fi){
+  const res={};
+  const POST=['rinyu','ikusei','barn3','barn2','barn1'];
+  // 離乳以降の集計用
+  let pDie=0, pOut=0; // pOut = 死亡+肉出荷+種出荷+候補
+  const nd=days(fi);
+
+  for(const barn of BARNS){
+    const {arr}=runTotals(fi,barn.id);
+    let die=0, inc=0;
+    // 離乳以降用の出荷系合計
+    let ship_meat=0, ship_seed=0, dec_cand=0;
+
+    for(let d=1;d<=nd;d++){
+      die += gv(fi,barn.id,d,'die');
+      // 「増」は棟によってキーが異なる。inc + inc2 の合計
+      inc += gv(fi,barn.id,d,'inc');
+      inc += gv(fi,barn.id,d,'inc2'); // 1号舎の増(2号)
+      ship_meat += gv(fi,barn.id,d,'ship_meat');
+      ship_seed += gv(fi,barn.id,d,'ship_seed');
+      dec_cand  += gv(fi,barn.id,d,'dec_cand');
+    }
+
+    // 各棟事故率: 死亡 ÷ 増 × 100
+    const rate = inc>0 ? die/inc : 0;
+    const avg  = arr.reduce((a,b)=>a+b,0)/nd;
+    res[barn.id]={die, inc, ship_meat, ship_seed, dec_cand, rate, avg};
+
+    if(POST.includes(barn.id)){
+      pDie += die;
+      pOut += die + ship_meat + ship_seed + dec_cand;
+    }
+  }
+
+  // 離乳以降事故率: 死亡 ÷（死亡＋肉出荷＋種出荷＋候補）× 100
+  res.post={die:pDie, denom:pOut, rate:pOut>0?pDie/pOut:0};
+  return res;
+}
+
+function pct(r){ return (r*100).toFixed(2)+'%'; }
+
+// ============================================================
+// RENDER MONTH TABS
+// ============================================================
+function renderMoTabs(){
+  document.getElementById('moTabs').innerHTML=FISCAL.map((f,i)=>{
+    const k=`${f.y}_${f.m}_bunben`;
+    const has=!!(DB[k]||XL[k]);
+    const lbl=i<8?`${MON_JP[f.m]}`:`${f.y%100}/${MON_JP[f.m]}`;
+    return `<button class="mo-tab${i===curFi?' active':''}${has&&i!==curFi?' has-data':''}" onclick="selMo(${i})">${lbl}</button>`;
+  }).join('');
+}
+
+function selMo(i){ curFi=i; renderMoTabs(); renderBnTabs(); renderTable(); }
+
+// ============================================================
+// RENDER BARN TABS
+// ============================================================
+function renderBnTabs(){
+  document.getElementById('bnTabs').innerHTML=BARNS.map(b=>
+    `<button class="bn-tab${b.id===curBarn?' active':''}" onclick="selBn('${b.id}')">${b.name}</button>`
+  ).join('');
+}
+
+function selBn(id){ curBarn=id; renderBnTabs(); renderTable(); }
+
+// ============================================================
+// RENDER TABLE
+// ============================================================
+function renderTable(){
+  const fi=curFi, bid=curBarn;
+  const barn=BARNS.find(b=>b.id===bid);
+  const nd=days(fi);
+  const {arr,start}=runTotals(fi,bid);
+  const xlRec=XL[key(fi,bid)];
+  const pe=prevEnd(fi,bid);
+  const autoInit=(!data(fi,bid).initCount&&pe!==null&&pe>0);
+  // 月初頭数はrunTotalsが決定したstartが正しい値
+  const dispInit=start;
+
+  // Column totals
+  const ct={};
+  barn.cols.filter(c=>!c.calc).forEach(c=>ct[c.key]=0);
+  let totDie=0;
+
+  const fd=dow1(fi);
+  let rows='';
+  for(let d=1;d<=nd;d++){
+    const row=dd(fi,bid,d);
+    barn.cols.filter(c=>!c.calc).forEach(c=>{
+      const v=parseInt(row[c.key])||0;
+      ct[c.key]=(ct[c.key]||0)+v;
+      if(c.key==='die') totDie+=v;
+    });
+    const dow=(fd+d-1)%7;
+    const rc=dow===6?'sat':dow===0?'sun':'';
+
+    const cells=barn.cols.map(c=>{
+      if(c.calc) return `<td class="td-t">${arr[d-1]}</td>`;
+      let cls='', ro='', val='';
+
+      if(c.linkedFrom){
+        // Read from source
+        const sv=gv(fi,c.linkedFrom.barn,d,c.linkedFrom.key);
+        val=sv||'';
+        cls='lk'; ro='readonly';
+      } else {
+        val=row[c.key]||'';
+        const xlRow=xlRec?(xlRec.days[d]||xlRec.days[String(d)]||{}):null;
+        if(xlRow&&xlRow[c.key]!==undefined) cls='xl';
+      }
+      return `<td><input type="number" min="0" value="${val}" class="${cls}" ${ro}
+        onchange="onCell(${fi},'${bid}',${d},'${c.key}',this.value)"/></td>`;
+    }).join('');
+    rows+=`<tr class="${rc}"><td class="td-d">${d}</td>${cells}</tr>`;
+  }
+
+  const sumT=arr.reduce((a,b)=>a+b,0);
+  const avgD=(sumT/nd).toFixed(1);
+  // 当棟事故率: 死亡 ÷ 増 × 100（inc + inc2 の合計）
+  const totInc=(ct['inc']||0)+(ct['inc2']||0);
+  const arate=totInc>0?(totDie/totInc*100).toFixed(2):'0.00';
+  const rates=accRates(fi);
+
+  const prevNote=pe!==null?`<span style="font-size:10px;color:var(--tx3)">（前月末より自動）</span>`:'';
+  const canEdit=pe===null; // 前月データがない月だけ手動変更可
+
+  // Stats
+  const stats=`<div class="stats">
+    <div class="sc"><div class="lb">月初頭数</div><div class="vl">${dispInit}</div>
+      <div class="sb">${canEdit?`<a onclick="setInit()">変更</a>`:prevNote}</div></div>
+    <div class="sc"><div class="lb">月末頭数</div><div class="vl">${arr[nd-1]||0}</div><div class="sb">頭 → 翌月初に反映</div></div>
+    <div class="sc"><div class="lb">日平均頭数</div><div class="vl">${avgD}</div><div class="sb">頭/日</div></div>
+    <div class="sc"><div class="lb">死亡頭数</div><div class="vl" style="${totDie>0?'color:var(--rd)':''}">${totDie}</div>
+      <div class="sb">事故率 ${arate}%</div></div>
+  </div>`;
+
+  // Accident panel
+  const accHtml=`<div class="acc">
+    <h3>📊 事故率（${FISCAL[fi].y}年${FISCAL[fi].m}月）</h3>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:7px">
+      各棟：死亡÷増×100　／　離乳以降：死亡÷（死亡＋肉出荷＋種出荷＋候補）×100
+    </div>
+    <div class="acc-grid">
+    ${BARNS.map(b=>{const r=rates[b.id];return`<div class="ai">
+      <div class="an">${b.name}</div>
+      <div class="av">${r.inc>0?pct(r.rate):'－'}</div>
+      <div class="ad">死亡${r.die}頭 ／ 増${r.inc}頭</div></div>`}).join('')}
+    <div class="ai hl">
+      <div class="an" style="color:var(--gr)">離乳舎以降（計）</div>
+      <div class="av" style="color:var(--gr)">${rates.post.denom>0?pct(rates.post.rate):'－'}</div>
+      <div class="ad">死亡${rates.post.die}頭 ／ 分母${rates.post.denom}頭</div>
+    </div>
+  </div></div>`;
+
+  // Movement map
+  const mvmap=`<div class="movemap"><h3>🔀 移動連動ルール</h3><div class="mvrow">
+    <div class="mvitem">分娩舎「減」→ 離乳舎「増」</div>
+    <div class="mvitem">離乳舎「減(3号)」→ 3号舎「増」</div>
+    <div class="mvitem">離乳舎「減(育成)」→ 育成舎「増」</div>
+    <div class="mvitem">育成舎「減」→ 2号舎「増」</div>
+    <div class="mvitem">3号舎「減」→ 1号舎「増(3号)」</div>
+    <div class="mvitem">2号舎「減(1号)」→ 1号舎「増(2号)」</div>
+  </div></div>`;
+
+  // Notices
+  const hasXl=!!xlRec;
+  const hasLk=barn.cols.some(c=>c.linkedFrom);
+  const notices=`<div class="notices">
+    ${hasXl?`<div class="notice xl"><div class="ndot" style="background:var(--xl);border:1px solid var(--xl-bd)"></div>緑 = Excelから読込（上書き可）</div>`:''}
+    ${hasLk?`<div class="notice lk"><div class="ndot" style="background:var(--lk);border:1px solid var(--lk-bd)"></div>黄 = 他棟から自動連動（元の棟で変更）</div>`:''}
+  </div>`;
+
+  // Table
+  const thead=`<tr><th style="min-width:20px">日</th>${barn.cols.map(c=>
+    `<th class="${c.calc?'ttl':''}">${c.label}</th>`).join('')}</tr>`;
+  const tfoot=`<tr><td class="td-d">計</td>${barn.cols.map(c=>
+    c.calc?`<td class="td-t">${avgD}</td>`:`<td>${ct[c.key]||0}</td>`).join('')}</tr>`;
+
+  document.getElementById('content').innerHTML=
+    `${stats}${accHtml}${mvmap}${notices}
+     <div class="tw"><table><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table></div>`;
+}
+
+// ============================================================
+// EVENTS
+// ============================================================
+function onCell(fi,bid,d,colKey,val){
+  writeCell(fi,bid,d,colKey,val);
+  renderTable();
+}
+
+function setInit(){
+  const fi=curFi,bid=curBarn;
+  const pe=prevEnd(fi,bid);
+  const hint=pe!==null?`\n（前月末: ${pe}頭）`:'';
+  const v=prompt(`月初頭数を入力${hint}`,data(fi,bid).initCount||0);
+  if(v!==null){data(fi,bid).initCount=parseInt(v)||0;renderTable();}
+}
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+function saveData(){
+  try{
+    localStorage.setItem('haiyo_v4',JSON.stringify(DB));
+    const el=document.getElementById('msg');
+    el.textContent='保存しました ✓';
+    setTimeout(()=>el.textContent='',2200);
+  }catch(e){document.getElementById('msg').textContent='保存失敗';}
+}
+
+// ============================================================
+// EXCEL EXPORT
+// ============================================================
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+
+  // ── Monthly sheets ──
+  for(let fi=0;fi<FISCAL.length;fi++){
+    const {y,m}=FISCAL[fi];
+    const nd=days(fi);
+    const shName=`${y}.${m}`;
+
+    // Pre-calc all totals
+    const tots={};
+    for(const b of BARNS) tots[b.id]=runTotals(fi,b.id).arr;
+
+    const hdr1=['','分娩舎','','','','離乳舎','','','','','育成舎','','','','','3号舎','','','','','2号舎','','','','','','','1号舎','','','','','',''];
+    const hdr2=['日','増','減','死亡','合計','増','減(3号)','減(育成)','死亡','合計','増','減→2号','出荷(肉)','死亡','合計','増','減→1号','出荷(肉)','死亡','合計','増','減(1号)','減(候補)','出荷(種)','出荷(肉)','死亡','合計','増(3号)','増(2号)','出荷(種)','出荷(肉)','減(候補)','死亡','合計'];
+
+    const rowsArr=[hdr1,hdr2];
+    for(let d=1;d<=nd;d++){
+      const g=(bid,k)=>gv(fi,bid,d,k)||null;
+      const t=bid=>tots[bid][d-1];
+      rowsArr.push([
+        d,
+        g('bunben','inc'),g('bunben','dec'),g('bunben','die'),t('bunben'),
+        g('rinyu','inc'),g('rinyu','dec3'),g('rinyu','deciku'),g('rinyu','die'),t('rinyu'),
+        g('ikusei','inc'),g('ikusei','dec'),g('ikusei','ship_meat'),g('ikusei','die'),t('ikusei'),
+        g('barn3','inc'),g('barn3','dec'),g('barn3','ship_meat'),g('barn3','die'),t('barn3'),
+        g('barn2','inc'),g('barn2','dec1'),g('barn2','dec_cand'),g('barn2','ship_seed'),g('barn2','ship_meat'),g('barn2','die'),t('barn2'),
+        g('barn1','inc'),g('barn1','inc2'),g('barn1','ship_seed'),g('barn1','ship_meat'),g('barn1','dec_cand'),g('barn1','die'),t('barn1'),
+      ]);
+    }
+
+    // Summaries
+    const rates=accRates(fi);
+    rowsArr.push([]);
+    rowsArr.push(['事故率(死亡÷増×100)',
+      pct(rates.bunben.rate),'','','',
+      pct(rates.rinyu.rate),'','','','',
+      pct(rates.ikusei.rate),'','','','',
+      pct(rates.barn3.rate),'','','','',
+      pct(rates.barn2.rate),'','','','','',
+      pct(rates.barn1.rate)]);
+    rowsArr.push(['離乳以降事故率(死亡÷(死亡+肉出荷+種出荷+候補)×100)', pct(rates.post.rate), `死亡${rates.post.die}頭`, `分母${rates.post.denom}頭`]);
+    rowsArr.push(['平均頭数（分娩舎）',rates.bunben.avg.toFixed(1),'離乳',rates.rinyu.avg.toFixed(1),'育成',rates.ikusei.avg.toFixed(1),'3号',rates.barn3.avg.toFixed(1),'2号',rates.barn2.avg.toFixed(1),'1号',rates.barn1.avg.toFixed(1)]);
+
+    const ws=XLSX.utils.aoa_to_sheet(rowsArr);
+    ws['!cols']=Array(34).fill({wch:8});
+    XLSX.utils.book_append_sheet(wb,ws,shName);
+  }
+
+  // ── Annual accident rate sheet ──
+  const annRows=[
+    ['棟','4月','5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','年平均'],
+  ];
+  const barnInfo=[
+    {id:'bunben',label:'分娩舎'},{id:'rinyu',label:'離乳舎'},{id:'ikusei',label:'育成舎'},
+    {id:'barn3',label:'3号舎'},{id:'barn2',label:'2号舎'},{id:'barn1',label:'1号舎'},
+    {id:'post',label:'離乳以降計'}
+  ];
+  for(const bi of barnInfo){
+    const row=[bi.label];
+    let sum=0,cnt=0;
+    for(let fi=0;fi<FISCAL.length;fi++){
+      const k=key(fi,'bunben');
+      const has=!!(DB[k]||XL[k]);
+      if(has){
+        const r=accRates(fi);
+        const v=r[bi.id]?r[bi.id].rate:0;
+        row.push(pct(v));
+        sum+=v;cnt++;
+      } else row.push('');
+    }
+    row.push(cnt>0?pct(sum/cnt):'');
+    annRows.push(row);
+  }
+  const wsAnn=XLSX.utils.aoa_to_sheet(annRows);
+  wsAnn['!cols']=Array(14).fill({wch:11});
+  XLSX.utils.book_append_sheet(wb,wsAnn,'年間事故率');
+
+  XLSX.writeFile(wb,'常時飼養台帳_2026年度.xlsx');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+try{const r=localStorage.getItem('haiyo_v4');if(r)DB=JSON.parse(r);}catch(e){}
+renderMoTabs();
+renderBnTabs();
+renderTable();
+</script>
+</body>
+</html>
