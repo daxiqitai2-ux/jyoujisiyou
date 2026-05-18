@@ -185,7 +185,11 @@ const XL = {"2026_4_bunben":{"initCount":350,"days":{"1":{"die":2},"2":{"inc":12
 // STATE
 // ============================================================
 let DB = {};
-let curFi = 0;  // index into FISCAL
+// 今月のFISCALインデックスを自動設定
+const _now = new Date();
+const _cy = _now.getFullYear(), _cm = _now.getMonth()+1;
+let curFi = FISCAL.findIndex(f=>f.y===_cy&&f.m===_cm);
+if(curFi < 0) curFi = 0; // 年度外なら4月から
 let curBarn = 'bunben';
 
 // ============================================================
@@ -473,15 +477,23 @@ function setInit(){
 }
 
 // ============================================================
-// SAVE / LOAD
+// SAVE / LOAD  (localStorage)
 // ============================================================
-function saveData(){
+async function saveData(){
+  const el=document.getElementById('msg');
   try{
     localStorage.setItem('haiyo_v4',JSON.stringify(DB));
-    const el=document.getElementById('msg');
     el.textContent='保存しました ✓';
     setTimeout(()=>el.textContent='',2200);
-  }catch(e){document.getElementById('msg').textContent='保存失敗';}
+  }catch(e){ el.textContent='保存失敗'; }
+}
+
+async function loadData(){
+  try{
+    const raw=localStorage.getItem('haiyo_v4');
+    if(raw){ DB=JSON.parse(raw); return true; }
+  }catch(e){}
+  return false;
 }
 
 // ============================================================
@@ -571,10 +583,15 @@ function exportExcel(){
 // ============================================================
 // INIT
 // ============================================================
-try{const r=localStorage.getItem('haiyo_v4');if(r)DB=JSON.parse(r);}catch(e){}
-renderMoTabs();
-renderBnTabs();
-renderTable();
+(async()=>{
+  const el=document.getElementById('msg');
+  el.textContent='読込中...';
+  await loadData();
+  el.textContent='';
+  renderMoTabs();
+  renderBnTabs();
+  renderTable();
+})();
 </script>
 </body>
 </html>
