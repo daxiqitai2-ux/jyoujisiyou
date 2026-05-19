@@ -19,7 +19,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--tx);font-size:13px}
-/* ── HEADER ── */
 header{background:var(--gr);color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 header h1{font-size:15px;font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
 .hr{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
@@ -28,28 +27,23 @@ select option{background:#2b5c3a}
 .btn{padding:5px 11px;border-radius:var(--r);border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.17);color:#fff;font-size:12px;font-family:inherit;cursor:pointer;transition:.15s;font-weight:500}
 .btn:hover{background:rgba(255,255,255,.3)}
 #msg{font-size:11px;color:rgba(255,255,255,.8);min-width:68px}
-/* ── LAYOUT ── */
 .wrap{max-width:1560px;margin:0 auto;padding:14px 14px 30px}
-/* ── MONTH TABS (fiscal year) ── */
 .mo-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
 .mo-tab{padding:5px 11px;border-radius:var(--r);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;transition:.15s}
 .mo-tab:hover{border-color:var(--gr2);color:var(--gr)}
 .mo-tab.active{background:var(--gr);border-color:var(--gr);color:#fff;font-weight:700}
 .mo-tab.has-data{background:var(--gr-bg);border-color:var(--gr2);color:var(--gr)}
 .mo-tab.has-data.active{background:var(--gr);color:#fff}
-/* ── BARN TABS ── */
 .bn-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
 .bn-tab{padding:6px 14px;border-radius:var(--r);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;transition:.15s}
 .bn-tab:hover{border-color:var(--gr2);color:var(--gr)}
 .bn-tab.active{background:var(--gr);border-color:var(--gr);color:#fff;font-weight:700}
-/* ── STATS ── */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
 .sc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:9px 12px;box-shadow:var(--sh)}
 .sc .lb{font-size:10px;color:var(--tx3);margin-bottom:2px;letter-spacing:.03em}
 .sc .vl{font-size:19px;font-weight:700;line-height:1.2}
 .sc .sb{font-size:10px;color:var(--tx3);margin-top:2px}
 .sc .sb a{color:var(--gr2);cursor:pointer;text-decoration:underline}
-/* ── ACCIDENT PANEL ── */
 .acc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:11px 13px;margin-bottom:12px;box-shadow:var(--sh)}
 .acc h3{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:8px;letter-spacing:.04em}
 .acc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
@@ -58,13 +52,11 @@ select option{background:#2b5c3a}
 .ai .an{font-size:10px;color:var(--tx3);margin-bottom:2px}
 .ai .av{font-size:14px;font-weight:700}
 .ai .ad{font-size:10px;color:var(--tx3)}
-/* ── NOTICES ── */
 .notices{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .notice{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--tx2);padding:4px 8px;border-radius:var(--r)}
 .notice.xl{background:var(--xl);border:1px solid var(--xl-bd)}
 .notice.lk{background:var(--lk);border:1px solid var(--lk-bd)}
 .ndot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
-/* ── TABLE ── */
 .tw{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);box-shadow:var(--sh);overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:11px}
 thead th{background:var(--sur2);padding:5px 4px;text-align:center;font-weight:700;font-size:10px;border-bottom:1px solid var(--bd2);white-space:nowrap;position:sticky;top:0;z-index:2;letter-spacing:.01em}
@@ -86,7 +78,6 @@ input[type=number].xl{background:var(--xl)}
 input[type=number].xl:focus{background:#fff}
 input[type=number].lk{background:var(--lk);cursor:not-allowed;opacity:.75}
 input[type=number]::-webkit-inner-spin-button{opacity:.4}
-/* ── MOVE MAP ── */
 .movemap{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:10px 13px;margin-bottom:12px;box-shadow:var(--sh)}
 .movemap h3{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:7px}
 .mvrow{display:flex;flex-wrap:wrap;gap:5px;font-size:11px;color:var(--tx2)}
@@ -104,7 +95,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 </header>
 
 <div class="wrap">
-  <!-- Month tabs: Apr 2026 – Mar 2027 -->
   <div class="mo-tabs" id="moTabs"></div>
   <div class="bn-tabs" id="bnTabs"></div>
   <div id="content"></div>
@@ -112,7 +102,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 
 <script>
 // ============================================================
-// FISCAL YEAR: 2026/04 → 2027/03
+// API設定
+// ============================================================
+const API = 'https://crimson-credit-a3df.daxiqitai2.workers.dev';
+
+// ============================================================
+// FISCAL YEAR
 // ============================================================
 const FISCAL = [
   {y:2026,m:4},{y:2026,m:5},{y:2026,m:6},{y:2026,m:7},
@@ -121,12 +116,6 @@ const FISCAL = [
 ];
 const MON_JP=['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
-// ============================================================
-// BARN & MOVEMENT DEFINITIONS
-// linksTo  : when THIS cell changes, write to dest barn/key
-// linkedFrom: THIS cell is read-only, driven by src barn/key
-// multiLink : one "dec" maps to multiple destinations based on sub-key
-// ============================================================
 const BARNS = [
   {id:'bunben', name:'分娩舎', cols:[
     {key:'inc',  label:'増'},
@@ -143,21 +132,21 @@ const BARNS = [
   ]},
   {id:'ikusei', name:'育成舎', cols:[
     {key:'inc',      label:'増',      linkedFrom:{barn:'rinyu', key:'deciku'}},
-    {key:'dec',      label:'減',      linksTo:{barn:'barn2', key:'inc'}},   // 育成→2号
+    {key:'dec',      label:'減',      linksTo:{barn:'barn2', key:'inc'}},
     {key:'ship_meat',label:'出荷(肉)'},
     {key:'die',      label:'死亡'},
     {key:'total',    label:'合計', calc:true}
   ]},
   {id:'barn3', name:'3号舎', cols:[
     {key:'inc',      label:'増',      linkedFrom:{barn:'rinyu', key:'dec3'}},
-    {key:'dec',      label:'減',      linksTo:{barn:'barn1', key:'inc'}},   // 3号→1号
+    {key:'dec',      label:'減',      linksTo:{barn:'barn1', key:'inc'}},
     {key:'ship_meat',label:'出荷(肉)'},
     {key:'die',      label:'死亡'},
     {key:'total',    label:'合計', calc:true}
   ]},
   {id:'barn2', name:'2号舎', cols:[
     {key:'inc',      label:'増',      linkedFrom:{barn:'ikusei', key:'dec'}},
-    {key:'dec1',     label:'減(1号)', linksTo:{barn:'barn1',  key:'inc2'}},  // 2号→1号(inc2)
+    {key:'dec1',     label:'減(1号)', linksTo:{barn:'barn1',  key:'inc2'}},
     {key:'dec_cand', label:'減(候補)'},
     {key:'ship_seed',label:'出荷(種)'},
     {key:'ship_meat',label:'出荷(肉)'},
@@ -165,7 +154,6 @@ const BARNS = [
     {key:'total',    label:'合計', calc:true}
   ]},
   {id:'barn1', name:'1号舎', cols:[
-    // 1号舎の「増」は 3号舎「減」と 2号舎「減(1号)」の合計
     {key:'inc',      label:'増(3号)', linkedFrom:{barn:'barn3', key:'dec'}},
     {key:'inc2',     label:'増(2号)', linkedFrom:{barn:'barn2', key:'dec1'}},
     {key:'ship_seed',label:'出荷(種)'},
@@ -185,11 +173,10 @@ const XL = {"2026_4_bunben":{"initCount":350,"days":{"1":{"die":2},"2":{"inc":12
 // STATE
 // ============================================================
 let DB = {};
-// 今月のFISCALインデックスを自動設定
 const _now = new Date();
 const _cy = _now.getFullYear(), _cm = _now.getMonth()+1;
 let curFi = FISCAL.findIndex(f=>f.y===_cy&&f.m===_cm);
-if(curFi < 0) curFi = 0; // 年度外なら4月から
+if(curFi < 0) curFi = 0;
 let curBarn = 'bunben';
 
 // ============================================================
@@ -208,15 +195,13 @@ function data(fi, bid){
 }
 
 function dd(fi, bid, d){ const r=data(fi,bid); return r.days[d]||r.days[String(d)]||{}; }
-function gv(fi, bid, d, key){ return parseInt(dd(fi,bid,d)[key])||0; }
+function gv(fi, bid, d, k){ return parseInt(dd(fi,bid,d)[k])||0; }
 
 function prevEnd(fi, bid){
   if(fi===0) return null;
   const pfi=fi-1;
-  // 前月データが全くない場合はnull
   const pkey=key(pfi,bid);
   if(!DB[pkey]&&!XL[pkey]) return null;
-  // 前月のrunTotalsを呼んで最終日の合計を返す
   const {arr}=runTotals(pfi,bid);
   return arr[arr.length-1]??null;
 }
@@ -225,7 +210,6 @@ function runTotals(fi, bid){
   const rec=data(fi,bid);
   const barn=BARNS.find(b=>b.id===bid);
   const nd=days(fi);
-  // 前月末を常に優先。前月データがない（年度最初の月）のみinitCountを使う
   const pe=prevEnd(fi,bid);
   const start=(pe!==null)?pe:(rec.initCount||0);
   let t=start;
@@ -242,27 +226,12 @@ function runTotals(fi, bid){
   return {arr, start};
 }
 
-// ============================================================
-// PROPAGATE LINKS
-// ============================================================
-function propagate(fi, bid, colKey, val){
-  const barn=BARNS.find(b=>b.id===bid);
-  const col=barn.cols.find(c=>c.key===colKey);
-  if(!col||!col.linksTo) return;
-  const dest=data(fi,col.linksTo.barn);
-  // val is already written to source; mirror to dest
-  // We re-read directly from source to keep in sync
-}
-
-// Write a value and propagate
 function writeCell(fi, bid, d, colKey, rawVal){
   const rec=data(fi,bid);
   if(!rec.days[d]) rec.days[d]={};
   const v=parseInt(rawVal)||0;
   if(v===0) delete rec.days[d][colKey];
   else rec.days[d][colKey]=v;
-
-  // Propagate to linked barn
   const barn=BARNS.find(b=>b.id===bid);
   const col=barn.cols.find(c=>c.key===colKey);
   if(col&&col.linksTo){
@@ -273,44 +242,30 @@ function writeCell(fi, bid, d, colKey, rawVal){
   }
 }
 
-// ============================================================
-// ACCIDENT RATES
-// ============================================================
 function accRates(fi){
   const res={};
   const POST=['rinyu','ikusei','barn3','barn2','barn1'];
-  // 離乳以降の集計用
-  let pDie=0, pOut=0; // pOut = 死亡+肉出荷+種出荷+候補
+  let pDie=0, pOut=0;
   const nd=days(fi);
-
   for(const barn of BARNS){
     const {arr}=runTotals(fi,barn.id);
-    let die=0, inc=0;
-    // 離乳以降用の出荷系合計
-    let ship_meat=0, ship_seed=0, dec_cand=0;
-
+    let die=0, inc=0, ship_meat=0, ship_seed=0, dec_cand=0;
     for(let d=1;d<=nd;d++){
       die += gv(fi,barn.id,d,'die');
-      // 「増」は棟によってキーが異なる。inc + inc2 の合計
       inc += gv(fi,barn.id,d,'inc');
-      inc += gv(fi,barn.id,d,'inc2'); // 1号舎の増(2号)
+      inc += gv(fi,barn.id,d,'inc2');
       ship_meat += gv(fi,barn.id,d,'ship_meat');
       ship_seed += gv(fi,barn.id,d,'ship_seed');
       dec_cand  += gv(fi,barn.id,d,'dec_cand');
     }
-
-    // 各棟事故率: 死亡 ÷ 増 × 100
     const rate = inc>0 ? die/inc : 0;
     const avg  = arr.reduce((a,b)=>a+b,0)/nd;
     res[barn.id]={die, inc, ship_meat, ship_seed, dec_cand, rate, avg};
-
     if(POST.includes(barn.id)){
       pDie += die;
       pOut += die + ship_meat + ship_seed + dec_cand;
     }
   }
-
-  // 離乳以降事故率: 死亡 ÷（死亡＋肉出荷＋種出荷＋候補）× 100
   res.post={die:pDie, denom:pOut, rate:pOut>0?pDie/pOut:0};
   return res;
 }
@@ -318,7 +273,7 @@ function accRates(fi){
 function pct(r){ return (r*100).toFixed(2)+'%'; }
 
 // ============================================================
-// RENDER MONTH TABS
+// RENDER
 // ============================================================
 function renderMoTabs(){
   document.getElementById('moTabs').innerHTML=FISCAL.map((f,i)=>{
@@ -331,9 +286,6 @@ function renderMoTabs(){
 
 function selMo(i){ curFi=i; renderMoTabs(); renderBnTabs(); renderTable(); }
 
-// ============================================================
-// RENDER BARN TABS
-// ============================================================
 function renderBnTabs(){
   document.getElementById('bnTabs').innerHTML=BARNS.map(b=>
     `<button class="bn-tab${b.id===curBarn?' active':''}" onclick="selBn('${b.id}')">${b.name}</button>`
@@ -342,9 +294,6 @@ function renderBnTabs(){
 
 function selBn(id){ curBarn=id; renderBnTabs(); renderTable(); }
 
-// ============================================================
-// RENDER TABLE
-// ============================================================
 function renderTable(){
   const fi=curFi, bid=curBarn;
   const barn=BARNS.find(b=>b.id===bid);
@@ -352,15 +301,10 @@ function renderTable(){
   const {arr,start}=runTotals(fi,bid);
   const xlRec=XL[key(fi,bid)];
   const pe=prevEnd(fi,bid);
-  const autoInit=(!data(fi,bid).initCount&&pe!==null&&pe>0);
-  // 月初頭数はrunTotalsが決定したstartが正しい値
   const dispInit=start;
-
-  // Column totals
   const ct={};
   barn.cols.filter(c=>!c.calc).forEach(c=>ct[c.key]=0);
   let totDie=0;
-
   const fd=dow1(fi);
   let rows='';
   for(let d=1;d<=nd;d++){
@@ -372,16 +316,12 @@ function renderTable(){
     });
     const dow=(fd+d-1)%7;
     const rc=dow===6?'sat':dow===0?'sun':'';
-
     const cells=barn.cols.map(c=>{
       if(c.calc) return `<td class="td-t">${arr[d-1]}</td>`;
       let cls='', ro='', val='';
-
       if(c.linkedFrom){
-        // Read from source
         const sv=gv(fi,c.linkedFrom.barn,d,c.linkedFrom.key);
-        val=sv||'';
-        cls='lk'; ro='readonly';
+        val=sv||''; cls='lk'; ro='readonly';
       } else {
         val=row[c.key]||'';
         const xlRow=xlRec?(xlRec.days[d]||xlRec.days[String(d)]||{}):null;
@@ -392,18 +332,13 @@ function renderTable(){
     }).join('');
     rows+=`<tr class="${rc}"><td class="td-d">${d}</td>${cells}</tr>`;
   }
-
   const sumT=arr.reduce((a,b)=>a+b,0);
   const avgD=(sumT/nd).toFixed(1);
-  // 当棟事故率: 死亡 ÷ 増 × 100（inc + inc2 の合計）
   const totInc=(ct['inc']||0)+(ct['inc2']||0);
   const arate=totInc>0?(totDie/totInc*100).toFixed(2):'0.00';
   const rates=accRates(fi);
-
   const prevNote=pe!==null?`<span style="font-size:10px;color:var(--tx3)">（前月末より自動）</span>`:'';
-  const canEdit=pe===null; // 前月データがない月だけ手動変更可
-
-  // Stats
+  const canEdit=pe===null;
   const stats=`<div class="stats">
     <div class="sc"><div class="lb">月初頭数</div><div class="vl">${dispInit}</div>
       <div class="sb">${canEdit?`<a onclick="setInit()">変更</a>`:prevNote}</div></div>
@@ -412,13 +347,9 @@ function renderTable(){
     <div class="sc"><div class="lb">死亡頭数</div><div class="vl" style="${totDie>0?'color:var(--rd)':''}">${totDie}</div>
       <div class="sb">事故率 ${arate}%</div></div>
   </div>`;
-
-  // Accident panel
   const accHtml=`<div class="acc">
     <h3>📊 事故率（${FISCAL[fi].y}年${FISCAL[fi].m}月）</h3>
-    <div style="font-size:10px;color:var(--tx3);margin-bottom:7px">
-      各棟：死亡÷増×100　／　離乳以降：死亡÷（死亡＋肉出荷＋種出荷＋候補）×100
-    </div>
+    <div style="font-size:10px;color:var(--tx3);margin-bottom:7px">各棟：死亡÷増×100　／　離乳以降：死亡÷（死亡＋肉出荷＋種出荷＋候補）×100</div>
     <div class="acc-grid">
     ${BARNS.map(b=>{const r=rates[b.id];return`<div class="ai">
       <div class="an">${b.name}</div>
@@ -428,10 +359,7 @@ function renderTable(){
       <div class="an" style="color:var(--gr)">離乳舎以降（計）</div>
       <div class="av" style="color:var(--gr)">${rates.post.denom>0?pct(rates.post.rate):'－'}</div>
       <div class="ad">死亡${rates.post.die}頭 ／ 分母${rates.post.denom}頭</div>
-    </div>
-  </div></div>`;
-
-  // Movement map
+    </div></div></div>`;
   const mvmap=`<div class="movemap"><h3>🔀 移動連動ルール</h3><div class="mvrow">
     <div class="mvitem">分娩舎「減」→ 離乳舎「増」</div>
     <div class="mvitem">離乳舎「減(3号)」→ 3号舎「増」</div>
@@ -440,21 +368,16 @@ function renderTable(){
     <div class="mvitem">3号舎「減」→ 1号舎「増(3号)」</div>
     <div class="mvitem">2号舎「減(1号)」→ 1号舎「増(2号)」</div>
   </div></div>`;
-
-  // Notices
   const hasXl=!!xlRec;
   const hasLk=barn.cols.some(c=>c.linkedFrom);
   const notices=`<div class="notices">
     ${hasXl?`<div class="notice xl"><div class="ndot" style="background:var(--xl);border:1px solid var(--xl-bd)"></div>緑 = Excelから読込（上書き可）</div>`:''}
     ${hasLk?`<div class="notice lk"><div class="ndot" style="background:var(--lk);border:1px solid var(--lk-bd)"></div>黄 = 他棟から自動連動（元の棟で変更）</div>`:''}
   </div>`;
-
-  // Table
   const thead=`<tr><th style="min-width:20px">日</th>${barn.cols.map(c=>
     `<th class="${c.calc?'ttl':''}">${c.label}</th>`).join('')}</tr>`;
   const tfoot=`<tr><td class="td-d">計</td>${barn.cols.map(c=>
     c.calc?`<td class="td-t">${avgD}</td>`:`<td>${ct[c.key]||0}</td>`).join('')}</tr>`;
-
   document.getElementById('content').innerHTML=
     `${stats}${accHtml}${mvmap}${notices}
      <div class="tw"><table><thead>${thead}</thead><tbody>${rows}</tbody><tfoot>${tfoot}</tfoot></table></div>`;
@@ -466,6 +389,25 @@ function renderTable(){
 function onCell(fi,bid,d,colKey,val){
   writeCell(fi,bid,d,colKey,val);
   renderTable();
+  // 自動保存（APIに送信）
+  autoSaveCell(fi,bid,d,colKey,parseInt(val)||0);
+  // 連動先も保存
+  const barn=BARNS.find(b=>b.id===bid);
+  const col=barn.cols.find(c=>c.key===colKey);
+  if(col&&col.linksTo){
+    autoSaveCell(fi,col.linksTo.barn,d,col.linksTo.key,parseInt(val)||0);
+  }
+}
+
+async function autoSaveCell(fi,bid,d,colKey,value){
+  const {y,m}=FISCAL[fi];
+  try{
+    await fetch(`${API}/data`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({year:y,month:m,barn_id:bid,day:d,col_key:colKey,value})
+    });
+  }catch(e){ console.warn('自動保存失敗',e); }
 }
 
 function setInit(){
@@ -473,27 +415,104 @@ function setInit(){
   const pe=prevEnd(fi,bid);
   const hint=pe!==null?`\n（前月末: ${pe}頭）`:'';
   const v=prompt(`月初頭数を入力${hint}`,data(fi,bid).initCount||0);
-  if(v!==null){data(fi,bid).initCount=parseInt(v)||0;renderTable();}
+  if(v!==null){
+    const ic=parseInt(v)||0;
+    data(fi,bid).initCount=ic;
+    renderTable();
+    // APIに保存
+    const {y,m}=FISCAL[fi];
+    fetch(`${API}/init`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({year:y,month:m,barn_id:bid,init_count:ic})
+    }).catch(e=>console.warn('init保存失敗',e));
+  }
 }
 
 // ============================================================
-// SAVE / LOAD  (localStorage)
+// SAVE / LOAD  (D1 API + localStorageバックアップ)
 // ============================================================
 async function saveData(){
   const el=document.getElementById('msg');
+  el.textContent='保存中...';
   try{
+    // localStorageにも保存（オフラインバックアップ）
     localStorage.setItem('haiyo_v4',JSON.stringify(DB));
+    // 現在表示中の月の全データをAPIに送信
+    const fi=curFi;
+    const {y,m}=FISCAL[fi];
+    const promises=[];
+    for(const barn of BARNS){
+      const rec=data(fi,barn.id);
+      const nd=days(fi);
+      for(let d=1;d<=nd;d++){
+        const row=rec.days[d]||rec.days[String(d)]||{};
+        for(const col of barn.cols){
+          if(col.calc||col.linkedFrom) continue;
+          const v=parseInt(row[col.key])||0;
+          if(v>0){
+            promises.push(fetch(`${API}/data`,{
+              method:'POST',
+              headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({year:y,month:m,barn_id:barn.id,day:d,col_key:col.key,value:v})
+            }));
+          }
+        }
+      }
+      // init_countも保存
+      if(rec.initCount){
+        promises.push(fetch(`${API}/init`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({year:y,month:m,barn_id:barn.id,init_count:rec.initCount})
+        }));
+      }
+    }
+    await Promise.all(promises);
     el.textContent='保存しました ✓';
     setTimeout(()=>el.textContent='',2200);
-  }catch(e){ el.textContent='保存失敗'; }
+  }catch(e){
+    el.textContent='保存失敗';
+    console.error(e);
+  }
 }
 
 async function loadData(){
+  const el=document.getElementById('msg');
+  el.textContent='読込中...';
   try{
+    // まずlocalStorageから読み込み（高速表示）
     const raw=localStorage.getItem('haiyo_v4');
-    if(raw){ DB=JSON.parse(raw); return true; }
-  }catch(e){}
-  return false;
+    if(raw) DB=JSON.parse(raw);
+
+    // APIから現在月のデータを取得して上書き
+    const fi=curFi;
+    const {y,m}=FISCAL[fi];
+    const res=await fetch(`${API}/data?year=${y}&month=${m}`);
+    if(res.ok){
+      const json=await res.json();
+      // D1のデータをDBに反映
+      for(const row of json.rows){
+        const k=`${row.year}_${row.month}_${row.barn_id}`;
+        if(!DB[k]) DB[k]=XL[k]?JSON.parse(JSON.stringify(XL[k])):{initCount:0,days:{}};
+        const d=row.day;
+        if(!DB[k].days[d]) DB[k].days[d]={};
+        DB[k].days[d][row.col_key]=row.value;
+      }
+      // init_countも反映
+      for(const init of json.inits){
+        const k=`${init.year}_${init.month}_${init.barn_id}`;
+        if(!DB[k]) DB[k]={initCount:0,days:{}};
+        DB[k].initCount=init.init_count;
+      }
+    }
+    el.textContent='';
+    return true;
+  }catch(e){
+    el.textContent='';
+    console.warn('API読込失敗、ローカルデータを使用',e);
+    return false;
+  }
 }
 
 // ============================================================
@@ -501,26 +520,19 @@ async function loadData(){
 // ============================================================
 function exportExcel(){
   const wb=XLSX.utils.book_new();
-
-  // ── Monthly sheets ──
   for(let fi=0;fi<FISCAL.length;fi++){
     const {y,m}=FISCAL[fi];
     const nd=days(fi);
     const shName=`${y}.${m}`;
-
-    // Pre-calc all totals
     const tots={};
     for(const b of BARNS) tots[b.id]=runTotals(fi,b.id).arr;
-
     const hdr1=['','分娩舎','','','','離乳舎','','','','','育成舎','','','','','3号舎','','','','','2号舎','','','','','','','1号舎','','','','','',''];
     const hdr2=['日','増','減','死亡','合計','増','減(3号)','減(育成)','死亡','合計','増','減→2号','出荷(肉)','死亡','合計','増','減→1号','出荷(肉)','死亡','合計','増','減(1号)','減(候補)','出荷(種)','出荷(肉)','死亡','合計','増(3号)','増(2号)','出荷(種)','出荷(肉)','減(候補)','死亡','合計'];
-
     const rowsArr=[hdr1,hdr2];
     for(let d=1;d<=nd;d++){
       const g=(bid,k)=>gv(fi,bid,d,k)||null;
       const t=bid=>tots[bid][d-1];
-      rowsArr.push([
-        d,
+      rowsArr.push([d,
         g('bunben','inc'),g('bunben','dec'),g('bunben','die'),t('bunben'),
         g('rinyu','inc'),g('rinyu','dec3'),g('rinyu','deciku'),g('rinyu','die'),t('rinyu'),
         g('ikusei','inc'),g('ikusei','dec'),g('ikusei','ship_meat'),g('ikusei','die'),t('ikusei'),
@@ -529,54 +541,15 @@ function exportExcel(){
         g('barn1','inc'),g('barn1','inc2'),g('barn1','ship_seed'),g('barn1','ship_meat'),g('barn1','dec_cand'),g('barn1','die'),t('barn1'),
       ]);
     }
-
-    // Summaries
     const rates=accRates(fi);
     rowsArr.push([]);
-    rowsArr.push(['事故率(死亡÷増×100)',
-      pct(rates.bunben.rate),'','','',
-      pct(rates.rinyu.rate),'','','','',
-      pct(rates.ikusei.rate),'','','','',
-      pct(rates.barn3.rate),'','','','',
-      pct(rates.barn2.rate),'','','','','',
-      pct(rates.barn1.rate)]);
-    rowsArr.push(['離乳以降事故率(死亡÷(死亡+肉出荷+種出荷+候補)×100)', pct(rates.post.rate), `死亡${rates.post.die}頭`, `分母${rates.post.denom}頭`]);
+    rowsArr.push(['事故率(死亡÷増×100)',pct(rates.bunben.rate),'','','',pct(rates.rinyu.rate),'','','','',pct(rates.ikusei.rate),'','','','',pct(rates.barn3.rate),'','','','',pct(rates.barn2.rate),'','','','','',pct(rates.barn1.rate)]);
+    rowsArr.push(['離乳以降事故率',pct(rates.post.rate),`死亡${rates.post.die}頭`,`分母${rates.post.denom}頭`]);
     rowsArr.push(['平均頭数（分娩舎）',rates.bunben.avg.toFixed(1),'離乳',rates.rinyu.avg.toFixed(1),'育成',rates.ikusei.avg.toFixed(1),'3号',rates.barn3.avg.toFixed(1),'2号',rates.barn2.avg.toFixed(1),'1号',rates.barn1.avg.toFixed(1)]);
-
     const ws=XLSX.utils.aoa_to_sheet(rowsArr);
     ws['!cols']=Array(34).fill({wch:8});
     XLSX.utils.book_append_sheet(wb,ws,shName);
   }
-
-  // ── Annual accident rate sheet ──
-  const annRows=[
-    ['棟','4月','5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','年平均'],
-  ];
-  const barnInfo=[
-    {id:'bunben',label:'分娩舎'},{id:'rinyu',label:'離乳舎'},{id:'ikusei',label:'育成舎'},
-    {id:'barn3',label:'3号舎'},{id:'barn2',label:'2号舎'},{id:'barn1',label:'1号舎'},
-    {id:'post',label:'離乳以降計'}
-  ];
-  for(const bi of barnInfo){
-    const row=[bi.label];
-    let sum=0,cnt=0;
-    for(let fi=0;fi<FISCAL.length;fi++){
-      const k=key(fi,'bunben');
-      const has=!!(DB[k]||XL[k]);
-      if(has){
-        const r=accRates(fi);
-        const v=r[bi.id]?r[bi.id].rate:0;
-        row.push(pct(v));
-        sum+=v;cnt++;
-      } else row.push('');
-    }
-    row.push(cnt>0?pct(sum/cnt):'');
-    annRows.push(row);
-  }
-  const wsAnn=XLSX.utils.aoa_to_sheet(annRows);
-  wsAnn['!cols']=Array(14).fill({wch:11});
-  XLSX.utils.book_append_sheet(wb,wsAnn,'年間事故率');
-
   XLSX.writeFile(wb,'常時飼養台帳_2026年度.xlsx');
 }
 
@@ -584,10 +557,7 @@ function exportExcel(){
 // INIT
 // ============================================================
 (async()=>{
-  const el=document.getElementById('msg');
-  el.textContent='読込中...';
   await loadData();
-  el.textContent='';
   renderMoTabs();
   renderBnTabs();
   renderTable();
