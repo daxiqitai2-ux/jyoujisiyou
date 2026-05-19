@@ -102,9 +102,15 @@ input[type=number]::-webkit-inner-spin-button{opacity:.4}
 
 <script>
 // ============================================================
-// API設定
+// API設定（KV経由）
 // ============================================================
-const API = 'https://crimson-credit-a3df.daxiqitai2.workers.dev';
+const API = 'https://crimson-credit-a3df.daxiqitai2.workers.dev/api';
+async function kvGet(key){
+  try{const r=await fetch(API+'/get?key='+encodeURIComponent(key));if(!r.ok)return null;const d=await r.json();return d.value??null;}catch(e){return null;}
+}
+async function kvSet(key,value){
+  try{await fetch(API+'/set',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key,value})});}catch(e){throw e;}
+}
 
 // ============================================================
 // FISCAL YEAR
@@ -400,13 +406,16 @@ function onCell(fi,bid,d,colKey,val){
 }
 
 async function autoSaveCell(fi,bid,d,colKey,value){
-  const {y,m}=FISCAL[fi];
+  // セル変更のたびに月単位でKVに保存
   try{
-    await fetch(`${API}/data`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({year:y,month:m,barn_id:bid,day:d,col_key:colKey,value})
-    });
+    const {y,m}=FISCAL[fi];
+    const k=`haiyo_${y}_${m}`;
+    // 現在の月データ全体を保存
+    const monthData={};
+    for(const barn of BARNS){
+      monthData[barn.id]=data(fi,barn.id);
+    }
+    await kvSet(k, JSON.stringify(monthData));
   }catch(e){ console.warn('自動保存失敗',e); }
 }
 
@@ -419,13 +428,8 @@ function setInit(){
     const ic=parseInt(v)||0;
     data(fi,bid).initCount=ic;
     renderTable();
-    // APIに保存
-    const {y,m}=FISCAL[fi];
-    fetch(`${API}/init`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({year:y,month:m,barn_id:bid,init_count:ic})
-    }).catch(e=>console.warn('init保存失敗',e));
+    // KVに保存（月全体）
+    autoSaveCell(fi,bid,null,null,null);
   }
 }
 
@@ -436,39 +440,15 @@ async function saveData(){
   const el=document.getElementById('msg');
   el.textContent='保存中...';
   try{
-    // localStorageにも保存（オフラインバックアップ）
-    localStorage.setItem('haiyo_v4',JSON.stringify(DB));
-    // 現在表示中の月の全データをAPIに送信
+    // KVに全月データを保存
     const fi=curFi;
     const {y,m}=FISCAL[fi];
-    const promises=[];
+    const k=`haiyo_${y}_${m}`;
+    const monthData={};
     for(const barn of BARNS){
-      const rec=data(fi,barn.id);
-      const nd=days(fi);
-      for(let d=1;d<=nd;d++){
-        const row=rec.days[d]||rec.days[String(d)]||{};
-        for(const col of barn.cols){
-          if(col.calc||col.linkedFrom) continue;
-          const v=parseInt(row[col.key])||0;
-          if(v>0){
-            promises.push(fetch(`${API}/data`,{
-              method:'POST',
-              headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({year:y,month:m,barn_id:barn.id,day:d,col_key:col.key,value:v})
-            }));
-          }
-        }
-      }
-      // init_countも保存
-      if(rec.initCount){
-        promises.push(fetch(`${API}/init`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({year:y,month:m,barn_id:barn.id,init_count:rec.initCount})
-        }));
-      }
+      monthData[barn.id]=data(fi,barn.id);
     }
-    await Promise.all(promises);
+    await kvSet(k, JSON.stringify(monthData));
     el.textContent='保存しました ✓';
     setTimeout(()=>el.textContent='',2200);
   }catch(e){
@@ -481,36 +461,26 @@ async function loadData(){
   const el=document.getElementById('msg');
   el.textContent='読込中...';
   try{
-    // まずlocalStorageから読み込み（高速表示）
-    const raw=localStorage.getItem('haiyo_v4');
-    if(raw) DB=JSON.parse(raw);
-
-    // APIから現在月のデータを取得して上書き
-    const fi=curFi;
-    const {y,m}=FISCAL[fi];
-    const res=await fetch(`${API}/data?year=${y}&month=${m}`);
-    if(res.ok){
-      const json=await res.json();
-      // D1のデータをDBに反映
-      for(const row of json.rows){
-        const k=`${row.year}_${row.month}_${row.barn_id}`;
-        if(!DB[k]) DB[k]=XL[k]?JSON.parse(JSON.stringify(XL[k])):{initCount:0,days:{}};
-        const d=row.day;
-        if(!DB[k].days[d]) DB[k].days[d]={};
-        DB[k].days[d][row.col_key]=row.value;
-      }
-      // init_countも反映
-      for(const init of json.inits){
-        const k=`${init.year}_${init.month}_${init.barn_id}`;
-        if(!DB[k]) DB[k]={initCount:0,days:{}};
-        DB[k].initCount=init.init_count;
+    // KVから全FISCAL月のデータを読み込む
+    for(const f of FISCAL){
+      const {y,m}=f;
+      const k=`haiyo_${y}_${m}`;
+      const raw=await kvGet(k);
+      if(raw){
+        const monthData=JSON.parse(raw);
+        for(const barn of BARNS){
+          if(monthData[barn.id]){
+            const dk=`${y}_${m}_${barn.id}`;
+            DB[dk]=monthData[barn.id];
+          }
+        }
       }
     }
     el.textContent='';
     return true;
   }catch(e){
     el.textContent='';
-    console.warn('API読込失敗、ローカルデータを使用',e);
+    console.warn('KV読込失敗',e);
     return false;
   }
 }
